@@ -1,6 +1,7 @@
 pragma solidity ^0.4.21;
 
-import "./token/PausableToken.sol";
+import "./token/MintToken.sol";
+import "./ownership/HasNoEther.sol";
 import "./ownership/HasNoTokens.sol";
 import "./ownership/Rewardable.sol";
 import "./lifecycle/Buyable.sol";
@@ -9,28 +10,24 @@ import "./math/SafeMath.sol";
 /**
  * @title 智能合约
  */
-contract MFundToken is PausableToken,HasNoTokens,Rewardable,Buyable {
+contract MFunToken is MintToken,HasNoEther,HasNoTokens,Rewardable,Buyable {
   using SafeMath for uint256;
 
-	string public constant name     = "mFund";
-  string public constant symbol   = "mFund";
+	string public constant name     = "mfun";
+  string public constant symbol   = "mfun";
   uint8  public constant decimals = 18;
 
-  // 初创团队的账号
-  address public founderAddr;
-  // 投资者的账号
-  address public investorAddr;
-  // 顾问账号
-  address public advisorAddr;
+  // 市场账号
+  address public candyAddr;
+  // mfun账号
+  address public mfunAddr;
 
   // 总共发行8亿个币
   uint256 public constant INITIAL_SUPPLY  = 800000000 * (10 ** uint256(decimals));
   // 代币的分配
-  uint256 public constant OWNER_SUPPLY    = 100000000 * (10 ** uint256(decimals));
-  uint256 public constant REWARD_SUPPLY   = 200000000 * (10 ** uint256(decimals));
-  uint256 public constant FOUNDER_SUPPLY  = 100000000 * (10 ** uint256(decimals));
-  uint256 public constant INVESTOR_SUPPLY = 300000000 * (10 ** uint256(decimals));
-  uint256 public constant ADVISOR_SUPPLY  = 100000000 * (10 ** uint256(decimals));
+  uint256 public constant REWARD_SUPPLY   =  40000000 * (10 ** uint256(decimals));
+  uint256 public constant CANDY_SUPPLY    =  40000000 * (10 ** uint256(decimals));
+  uint256 public constant MFUN_SUPPLY     = 720000000 * (10 ** uint256(decimals));
 
   // 日志(事件)
   event ExchangeETH(address indexed to, uint256 tokenNum, uint256 value);
@@ -39,25 +36,17 @@ contract MFundToken is PausableToken,HasNoTokens,Rewardable,Buyable {
 
   /**
    * @dev 构造函数
-   * @param _rewardAddr  地址
-   * @param _founderAddr 地址
-   * @param _investorAddr 地址
-   * @param _advisorAddr 地址
    */
-  function MFundToken(address _rewardAddr,   address _founderAddr, 
-                      address _investorAddr, address _advisorAddr) public {
+  function MFunToken(address _rewardAddr, address _candyAddr, address _mfunAddr) public {
     owner = msg.sender;  
 
-    rewardAddr   =  _rewardAddr;
-    founderAddr  = _founderAddr;
-    investorAddr = _investorAddr;
-    advisorAddr  = _advisorAddr;
+    rewardAddr = _rewardAddr;
+    candyAddr  = _candyAddr;
+    mfunAddr   = _mfunAddr;
 
-    balances[owner]        = OWNER_SUPPLY;
-    balances[rewardAddr]   = REWARD_SUPPLY;
-    balances[founderAddr]  = FOUNDER_SUPPLY;
-    balances[investorAddr] = INVESTOR_SUPPLY;
-    balances[advisorAddr]  = ADVISOR_SUPPLY;
+    balances[rewardAddr] = REWARD_SUPPLY;
+    balances[candyAddr]  = CANDY_SUPPLY;
+    balances[mfunAddr]   = MFUN_SUPPLY;
 
     totalSupply_ = INITIAL_SUPPLY;
   }

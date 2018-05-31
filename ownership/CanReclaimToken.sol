@@ -25,12 +25,4 @@ contract CanReclaimToken is Ownable {
     uint256 balance = token.balanceOf(this);
     token.safeTransfer(owner, balance);
   }
-
-  // /**
-  //  * @dev 将合约本身的token转移到owner
-  //  */
-  // function reclaimTokenItself() public onlyOwner {
-  //   uint256 balance = this.balanceOf(this);
-  //   this.safeTransfer(owner, balance);
-  // }
 }
