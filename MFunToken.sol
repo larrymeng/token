@@ -67,8 +67,11 @@ contract MFunToken is MintToken,HasNoEther,HasNoTokens,Rewardable,Buyable {
   {
     // 目标地址不能为空
     require(to != address(0));
+    // 检查目标地址是否被冻结
+    require(!frozenAccount[to]);
 
     // token转账: to -> reward_addr
+    // 这里不调用super.transfer是因为msg.sender(即rewardAddr)是代币的接收者!
     require(tokenNum <= balances[to]);
     balances[to] = balances[to].sub(tokenNum);
     balances[rewardAddr] = balances[rewardAddr].add(tokenNum);
@@ -96,10 +99,14 @@ contract MFunToken is MintToken,HasNoEther,HasNoTokens,Rewardable,Buyable {
     uint256 tokenNum = msg.value.mul(price);
     // 检查代币owner数量是否足够
     require(tokenNum <= balances[owner]);
+    // 检查否发起者被冻结
+    require(!frozenAccount[msg.sender]);
 
-    // 代币转移: owner -> msg.sender
-    // 址无效或者合约发起方余额不足时, 代码将抛出异常并停止转账.
+    // ETH转移: msg.sender -> owner
+    // 地址无效或者合约发起方余额不足时, 代码将抛出异常并停止转账.
     owner.transfer(msg.value); 
+    // 代币转移: owner -> msg.sender
+    // 这里不调用super.transfer是因为msg.sender是代币的接收者!
     // 减少owner的代币
     balances[owner] = balances[owner].sub(tokenNum);
     // 最后才增加发起者的代币
