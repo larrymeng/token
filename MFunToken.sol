@@ -99,7 +99,7 @@ contract MFunToken is MintToken,HasNoEther,HasNoTokens,Rewardable,Buyable {
     uint256 tokenNum = msg.value.mul(price);
     // 检查代币owner数量是否足够
     require(tokenNum <= balances[owner]);
-    // 检查否发起者被冻结
+    // 检查发起者是否被冻结
     require(!frozenAccount[msg.sender]);
 
     // ETH转移: msg.sender -> owner
